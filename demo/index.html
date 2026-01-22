@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>RaveLand — Demo GUI</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <canvas id="bgCanvas" class="bg-canvas" aria-hidden="true"></canvas>
+    <main class="app">
+      <section class="plugin" aria-label="RaveLand demo GUI">
+        <header class="topbar">
+          <div class="brand-left">
+            <div class="ns-logo" aria-label="NS Audio logo">
+              <img class="logo-img" src="./assets/ns-audio.svg" alt="NS Audio" />
+            </div>
+          </div>
+
+          <div class="brand-center">
+            <div class="raveland-logo" aria-label="RaveLand logo">
+              <img class="logo-img logo-img-large" src="./assets/raveland.svg" alt="RaveLand" />
+            </div>
+            <div class="preset-row">
+              <div class="preset-picker" id="presetPicker">
+                <div class="label label-inline">Preset</div>
+                <button id="presetButton" class="preset-button" type="button" aria-haspopup="dialog" aria-expanded="false">
+                  <span id="presetButtonText">INIT — Clean Saw Lead</span>
+                  <span class="caret" aria-hidden="true">▾</span>
+                </button>
+                <div id="presetMenu" class="preset-menu" role="dialog" aria-label="Preset browser" hidden>
+                  <div class="preset-menu-head">
+                    <input id="presetSearch" class="preset-search" type="search" placeholder="Search presets…" />
+                    <button id="presetClose" class="icon-btn" type="button" aria-label="Close preset browser">✕</button>
+                  </div>
+                  <div id="presetMenuBody" class="preset-menu-body"></div>
+                </div>
+              </div>
+              <button id="randomizeBtn" class="btn" type="button">Randomize</button>
+              <button id="resetBtn" class="btn btn-secondary" type="button">Reset</button>
+            </div>
+          </div>
+
+          <div class="brand-right">
+            <div class="meta">
+              <div class="meta-line">NS Audio</div>
+              <div class="meta-line">RaveLand v1 (demo)</div>
+            </div>
+          </div>
+        </header>
+
+        <section class="grid">
+          <aside class="col col-left" aria-label="Audio samplers / layer oscillators">
+            <div class="panel">
+              <div class="panel-title">AUDIO LAYERS</div>
+              <div class="panel-subtitle">Pre-layered stacks (wav multisamples)</div>
+
+              <div class="layer" data-layer="A">
+                <div class="layer-head">
+                  <div class="layer-name">Layer A</div>
+                  <label class="switch">
+                    <input type="checkbox" class="toggle" data-bind="layers.A.enabled" checked />
+                    <span class="switch-ui" aria-hidden="true"></span>
+                    <span class="switch-label">On</span>
+                  </label>
+                </div>
+                <div class="row">
+                  <label class="label">Stack</label>
+                  <select class="select" data-bind="layers.A.stack"></select>
+                </div>
+                <div class="scope-wrap" aria-hidden="true">
+                  <canvas class="scope" data-scope="stack" data-layer="A"></canvas>
+                </div>
+                <div class="row two">
+                  <div class="control">
+                    <div class="label">Tune</div>
+                    <div class="knob" data-bind="layers.A.tune" data-min="-12" data-max="12" data-step="1" data-unit="st"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Start Rand</div>
+                    <div class="knob" data-bind="layers.A.startRand" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                  </div>
+                </div>
+                <div class="row two">
+                  <div class="control">
+                    <div class="label">Attack</div>
+                    <div class="slider" data-bind="layers.A.attack" data-min="0" data-max="500" data-step="1" data-unit="ms"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Release</div>
+                    <div class="slider" data-bind="layers.A.release" data-min="0" data-max="2000" data-step="1" data-unit="ms"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="layer" data-layer="B">
+                <div class="layer-head">
+                  <div class="layer-name">Layer B</div>
+                  <label class="switch">
+                    <input type="checkbox" class="toggle" data-bind="layers.B.enabled" checked />
+                    <span class="switch-ui" aria-hidden="true"></span>
+                    <span class="switch-label">On</span>
+                  </label>
+                </div>
+                <div class="row">
+                  <label class="label">Stack</label>
+                  <select class="select" data-bind="layers.B.stack"></select>
+                </div>
+                <div class="scope-wrap" aria-hidden="true">
+                  <canvas class="scope" data-scope="stack" data-layer="B"></canvas>
+                </div>
+                <div class="row two">
+                  <div class="control">
+                    <div class="label">Tune</div>
+                    <div class="knob" data-bind="layers.B.tune" data-min="-12" data-max="12" data-step="1" data-unit="st"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Start Rand</div>
+                    <div class="knob" data-bind="layers.B.startRand" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                  </div>
+                </div>
+                <div class="row two">
+                  <div class="control">
+                    <div class="label">Attack</div>
+                    <div class="slider" data-bind="layers.B.attack" data-min="0" data-max="500" data-step="1" data-unit="ms"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Release</div>
+                    <div class="slider" data-bind="layers.B.release" data-min="0" data-max="2000" data-step="1" data-unit="ms"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="layer" data-layer="C">
+                <div class="layer-head">
+                  <div class="layer-name">Layer C</div>
+                  <label class="switch">
+                    <input type="checkbox" class="toggle" data-bind="layers.C.enabled" />
+                    <span class="switch-ui" aria-hidden="true"></span>
+                    <span class="switch-label">On</span>
+                  </label>
+                </div>
+                <div class="row">
+                  <label class="label">Stack</label>
+                  <select class="select" data-bind="layers.C.stack"></select>
+                </div>
+                <div class="scope-wrap" aria-hidden="true">
+                  <canvas class="scope" data-scope="stack" data-layer="C"></canvas>
+                </div>
+                <div class="row two">
+                  <div class="control">
+                    <div class="label">Tune</div>
+                    <div class="knob" data-bind="layers.C.tune" data-min="-12" data-max="12" data-step="1" data-unit="st"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Start Rand</div>
+                    <div class="knob" data-bind="layers.C.startRand" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                  </div>
+                </div>
+                <div class="row two">
+                  <div class="control">
+                    <div class="label">Attack</div>
+                    <div class="slider" data-bind="layers.C.attack" data-min="0" data-max="500" data-step="1" data-unit="ms"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Release</div>
+                    <div class="slider" data-bind="layers.C.release" data-min="0" data-max="2000" data-step="1" data-unit="ms"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hint">
+                Multisample spec from PDF: ~5s per note, ~104 samples/preset, no velocity, random start per hit.
+              </div>
+            </div>
+
+            <div class="panel bottom-left">
+              <div class="panel-title">PERFORMANCE</div>
+              <div class="perf">
+                <div class="wheel">
+                  <div class="wheel-label">Pitch</div>
+                  <input type="range" class="wheel-range" min="-100" max="100" value="0" />
+                </div>
+                <div class="wheel">
+                  <div class="wheel-label">Mod</div>
+                  <input type="range" class="wheel-range" min="0" max="100" value="0" />
+                </div>
+                <div class="perf-right">
+                  <div class="row two">
+                    <label class="switch">
+                      <input type="checkbox" class="toggle" data-bind="mono.enabled" />
+                      <span class="switch-ui" aria-hidden="true"></span>
+                      <span class="switch-label">Mono</span>
+                    </label>
+                    <label class="switch">
+                      <input type="checkbox" class="toggle" data-bind="mono.legato" />
+                      <span class="switch-ui" aria-hidden="true"></span>
+                      <span class="switch-label">Legato</span>
+                    </label>
+                  </div>
+                  <div class="row">
+                    <div class="control">
+                      <div class="label">Porta</div>
+                      <div class="knob" data-bind="mono.portamento" data-min="0" data-max="500" data-step="1" data-unit="ms"></div>
+                    </div>
+                    <div class="control">
+                      <div class="label">Glide Curve</div>
+                      <div class="knob" data-bind="mono.curve" data-min="-100" data-max="100" data-step="1" data-unit="%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <section class="col col-mid" aria-label="Effects and modulation">
+            <div class="panel">
+              <div class="panel-title">MOD (LFO / ENV)</div>
+              <div class="panel-subtitle">Serum-style: can act as LFO or envelope (demo)</div>
+
+              <div class="mod-grid">
+                <div class="mod-scope">
+                  <div class="row">
+                    <label class="label">Mode</label>
+                    <select class="select" data-bind="mod.mode">
+                      <option value="lfo">LFO</option>
+                      <option value="env">ENV</option>
+                    </select>
+                  </div>
+                  <div class="row two">
+                    <div class="control">
+                      <div class="label">Rate</div>
+                      <div class="knob" data-bind="mod.rate" data-min="0.05" data-max="32" data-step="0.05" data-unit="Hz"></div>
+                    </div>
+                    <div class="control">
+                      <div class="label">Amount</div>
+                      <div class="knob" data-bind="mod.amount" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="label">Target</label>
+                    <select class="select" data-bind="mod.target">
+                      <option value="none">None</option>
+                      <option value="osc1.detune">OSC1 Detune</option>
+                      <option value="osc2.detune">OSC2 Detune</option>
+                      <option value="osc3.detune">OSC3 Detune</option>
+                      <option value="filter.cutoff">Filter Cutoff</option>
+                      <option value="dist.drive">Dist Drive</option>
+                      <option value="layerA.startRand">Layer A Start Rand</option>
+                    </select>
+                  </div>
+                  <div class="hint small">Drag &amp; drop isn’t implemented; this demo uses a simple “Target” selector.</div>
+                </div>
+
+                <div class="mod-view" aria-label="Modulation view">
+                  <canvas id="modCanvas" width="520" height="160"></canvas>
+                  <div class="mod-actions">
+                    <button class="btn btn-secondary" id="modShapeBtn" type="button">Change Shape</button>
+                    <button class="btn btn-secondary" id="modTriggerBtn" type="button">Trigger</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-title">FX</div>
+              <div class="panel-subtitle">Reverb (hall/room), delay, chorus, distortion + filter</div>
+
+              <div class="fx">
+                <div class="fx-left">
+                  <div class="fx-block">
+                    <div class="fx-head">
+                      <div class="fx-name">Filter (pre)</div>
+                      <label class="switch">
+                        <input type="checkbox" class="toggle" data-bind="fx.filter.enabled" checked />
+                        <span class="switch-ui" aria-hidden="true"></span>
+                        <span class="switch-label">On</span>
+                      </label>
+                    </div>
+                    <div class="row">
+                      <label class="label">Type</label>
+                      <select class="select" data-bind="fx.filter.type">
+                        <option value="lp">Lowpass</option>
+                        <option value="hp">Highpass</option>
+                        <option value="bp">Bandpass</option>
+                      </select>
+                    </div>
+                    <div class="row two">
+                      <div class="control">
+                        <div class="label">Cutoff</div>
+                        <div class="knob" data-bind="fx.filter.cutoff" data-min="20" data-max="20000" data-step="1" data-unit="Hz"></div>
+                      </div>
+                      <div class="control">
+                        <div class="label">Reso</div>
+                        <div class="knob" data-bind="fx.filter.reso" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="fx-block">
+                    <div class="fx-head">
+                      <div class="fx-name">Chorus</div>
+                      <label class="switch">
+                        <input type="checkbox" class="toggle" data-bind="fx.chorus.enabled" checked />
+                        <span class="switch-ui" aria-hidden="true"></span>
+                        <span class="switch-label">On</span>
+                      </label>
+                    </div>
+                    <div class="row two">
+                      <div class="control">
+                        <div class="label">Rate</div>
+                        <div class="knob" data-bind="fx.chorus.rate" data-min="0.05" data-max="10" data-step="0.05" data-unit="Hz"></div>
+                      </div>
+                      <div class="control">
+                        <div class="label">Mix</div>
+                        <div class="knob" data-bind="fx.chorus.mix" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="fx-mid">
+                  <div class="fx-block">
+                    <div class="fx-head">
+                      <div class="fx-name">Delay</div>
+                      <label class="switch">
+                        <input type="checkbox" class="toggle" data-bind="fx.delay.enabled" checked />
+                        <span class="switch-ui" aria-hidden="true"></span>
+                        <span class="switch-label">On</span>
+                      </label>
+                    </div>
+                    <div class="row two">
+                      <div class="control">
+                        <div class="label">Time</div>
+                        <div class="knob" data-bind="fx.delay.time" data-min="1" data-max="800" data-step="1" data-unit="ms"></div>
+                      </div>
+                      <div class="control">
+                        <div class="label">Feedback</div>
+                        <div class="knob" data-bind="fx.delay.fb" data-min="0" data-max="95" data-step="1" data-unit="%"></div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="control wide">
+                        <div class="label">Mix</div>
+                        <div class="slider" data-bind="fx.delay.mix" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="fx-block">
+                    <div class="fx-head">
+                      <div class="fx-name">Reverb</div>
+                      <label class="switch">
+                        <input type="checkbox" class="toggle" data-bind="fx.reverb.enabled" checked />
+                        <span class="switch-ui" aria-hidden="true"></span>
+                        <span class="switch-label">On</span>
+                      </label>
+                    </div>
+                    <div class="row">
+                      <label class="label">Mode</label>
+                      <select class="select" data-bind="fx.reverb.mode">
+                        <option value="hall">Hall</option>
+                        <option value="room">Room</option>
+                      </select>
+                    </div>
+                    <div class="row two">
+                      <div class="control">
+                        <div class="label">Size</div>
+                        <div class="knob" data-bind="fx.reverb.size" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                      </div>
+                      <div class="control">
+                        <div class="label">Damp</div>
+                        <div class="knob" data-bind="fx.reverb.damp" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="control wide">
+                        <div class="label">Mix</div>
+                        <div class="slider" data-bind="fx.reverb.mix" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="fx-right">
+                  <div class="fx-block">
+                    <div class="fx-head">
+                      <div class="fx-name">Distortion</div>
+                      <label class="switch">
+                        <input type="checkbox" class="toggle" data-bind="fx.dist.enabled" checked />
+                        <span class="switch-ui" aria-hidden="true"></span>
+                        <span class="switch-label">On</span>
+                      </label>
+                    </div>
+                    <div class="row">
+                      <label class="label">Type</label>
+                      <select class="select" data-bind="fx.dist.type">
+                        <option value="soft">Soft</option>
+                        <option value="hard">Hard</option>
+                        <option value="tape">Tape</option>
+                      </select>
+                    </div>
+                    <div class="row two">
+                      <div class="control">
+                        <div class="label">Drive</div>
+                        <div class="knob" data-bind="fx.dist.drive" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                      </div>
+                      <div class="control">
+                        <div class="label">Tone</div>
+                        <div class="knob" data-bind="fx.dist.tone" data-min="-100" data-max="100" data-step="1" data-unit="%"></div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="control wide">
+                        <div class="label">Mix</div>
+                        <div class="slider" data-bind="fx.dist.mix" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="fx-block routing">
+                    <div class="fx-head">
+                      <div class="fx-name">Routing (demo)</div>
+                    </div>
+                    <ol id="fxChain" class="chain" aria-label="FX chain order"></ol>
+                    <div class="hint small">PDF asks if routing can be flexible; this demo allows re-ordering.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <aside class="col col-right" aria-label="Oscillators">
+            <div class="panel">
+              <div class="panel-title">OSCILLATORS</div>
+              <div class="panel-subtitle">3–4 oscillators, 16+ unison, heavy detune</div>
+
+              <div class="osc" data-osc="1">
+                <div class="osc-head">
+                  <div class="osc-name">OSC 1</div>
+                  <label class="switch">
+                    <input type="checkbox" class="toggle" data-bind="osc.1.enabled" checked />
+                    <span class="switch-ui" aria-hidden="true"></span>
+                    <span class="switch-label">On</span>
+                  </label>
+                </div>
+                <div class="row">
+                  <label class="label">Wave</label>
+                  <select class="select" data-bind="osc.1.wave">
+                    <option value="saw">Saw (A)</option>
+                    <option value="saw2">Saw (B)</option>
+                    <option value="saw3">Saw (C)</option>
+                    <option value="pulse">Pulse</option>
+                    <option value="sine">Sine</option>
+                    <option value="tri">Triangle</option>
+                    <option value="noise">Noise</option>
+                    <option value="virus">“Virus-ish” (mock)</option>
+                    <option value="jp">“JP-8080-ish” (mock)</option>
+                  </select>
+                </div>
+                <div class="scope-wrap" aria-hidden="true">
+                  <canvas class="scope" data-scope="osc" data-osc="1"></canvas>
+                </div>
+                <div class="row two">
+                  <div class="control">
+                    <div class="label">Unison</div>
+                    <div class="knob" data-bind="osc.1.voices" data-min="1" data-max="32" data-step="1" data-unit="v"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Detune</div>
+                    <div class="knob" data-bind="osc.1.detune" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                  </div>
+                </div>
+                <div class="row three">
+                  <div class="control">
+                    <div class="label">Semi</div>
+                    <div class="knob" data-bind="osc.1.semi" data-min="-24" data-max="24" data-step="1" data-unit="st"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Fine</div>
+                    <div class="knob" data-bind="osc.1.fine" data-min="-100" data-max="100" data-step="1" data-unit="ct"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Level</div>
+                    <div class="knob" data-bind="osc.1.level" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="osc" data-osc="2">
+                <div class="osc-head">
+                  <div class="osc-name">OSC 2</div>
+                  <label class="switch">
+                    <input type="checkbox" class="toggle" data-bind="osc.2.enabled" checked />
+                    <span class="switch-ui" aria-hidden="true"></span>
+                    <span class="switch-label">On</span>
+                  </label>
+                </div>
+                <div class="row">
+                  <label class="label">Wave</label>
+                  <select class="select" data-bind="osc.2.wave">
+                    <option value="saw">Saw (A)</option>
+                    <option value="saw2">Saw (B)</option>
+                    <option value="saw3">Saw (C)</option>
+                    <option value="pulse">Pulse</option>
+                    <option value="sine">Sine</option>
+                    <option value="tri">Triangle</option>
+                    <option value="noise">Noise</option>
+                    <option value="virus">“Virus-ish” (mock)</option>
+                    <option value="jp">“JP-8080-ish” (mock)</option>
+                  </select>
+                </div>
+                <div class="scope-wrap" aria-hidden="true">
+                  <canvas class="scope" data-scope="osc" data-osc="2"></canvas>
+                </div>
+                <div class="row two">
+                  <div class="control">
+                    <div class="label">Unison</div>
+                    <div class="knob" data-bind="osc.2.voices" data-min="1" data-max="32" data-step="1" data-unit="v"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Detune</div>
+                    <div class="knob" data-bind="osc.2.detune" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                  </div>
+                </div>
+                <div class="row three">
+                  <div class="control">
+                    <div class="label">Semi</div>
+                    <div class="knob" data-bind="osc.2.semi" data-min="-24" data-max="24" data-step="1" data-unit="st"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Fine</div>
+                    <div class="knob" data-bind="osc.2.fine" data-min="-100" data-max="100" data-step="1" data-unit="ct"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Level</div>
+                    <div class="knob" data-bind="osc.2.level" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="osc" data-osc="3">
+                <div class="osc-head">
+                  <div class="osc-name">OSC 3</div>
+                  <label class="switch">
+                    <input type="checkbox" class="toggle" data-bind="osc.3.enabled" checked />
+                    <span class="switch-ui" aria-hidden="true"></span>
+                    <span class="switch-label">On</span>
+                  </label>
+                </div>
+                <div class="row">
+                  <label class="label">Wave</label>
+                  <select class="select" data-bind="osc.3.wave">
+                    <option value="saw">Saw (A)</option>
+                    <option value="saw2">Saw (B)</option>
+                    <option value="saw3">Saw (C)</option>
+                    <option value="pulse">Pulse</option>
+                    <option value="sine">Sine</option>
+                    <option value="tri">Triangle</option>
+                    <option value="noise">Noise</option>
+                    <option value="virus">“Virus-ish” (mock)</option>
+                    <option value="jp">“JP-8080-ish” (mock)</option>
+                  </select>
+                </div>
+                <div class="scope-wrap" aria-hidden="true">
+                  <canvas class="scope" data-scope="osc" data-osc="3"></canvas>
+                </div>
+                <div class="row two">
+                  <div class="control">
+                    <div class="label">Unison</div>
+                    <div class="knob" data-bind="osc.3.voices" data-min="1" data-max="32" data-step="1" data-unit="v"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Detune</div>
+                    <div class="knob" data-bind="osc.3.detune" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                  </div>
+                </div>
+                <div class="row three">
+                  <div class="control">
+                    <div class="label">Semi</div>
+                    <div class="knob" data-bind="osc.3.semi" data-min="-24" data-max="24" data-step="1" data-unit="st"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Fine</div>
+                    <div class="knob" data-bind="osc.3.fine" data-min="-100" data-max="100" data-step="1" data-unit="ct"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Level</div>
+                    <div class="knob" data-bind="osc.3.level" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="osc osc-4" data-osc="4">
+                <div class="osc-head">
+                  <div class="osc-name">OSC 4 (optional)</div>
+                  <label class="switch">
+                    <input type="checkbox" class="toggle" data-bind="osc.4.enabled" />
+                    <span class="switch-ui" aria-hidden="true"></span>
+                    <span class="switch-label">On</span>
+                  </label>
+                </div>
+                <div class="row">
+                  <label class="label">Wave</label>
+                  <select class="select" data-bind="osc.4.wave">
+                    <option value="saw">Saw (A)</option>
+                    <option value="saw2">Saw (B)</option>
+                    <option value="saw3">Saw (C)</option>
+                    <option value="pulse">Pulse</option>
+                    <option value="sine">Sine</option>
+                    <option value="tri">Triangle</option>
+                    <option value="noise">Noise</option>
+                    <option value="virus">“Virus-ish” (mock)</option>
+                    <option value="jp">“JP-8080-ish” (mock)</option>
+                  </select>
+                </div>
+                <div class="scope-wrap" aria-hidden="true">
+                  <canvas class="scope" data-scope="osc" data-osc="4"></canvas>
+                </div>
+                <div class="row two">
+                  <div class="control">
+                    <div class="label">Unison</div>
+                    <div class="knob" data-bind="osc.4.voices" data-min="1" data-max="32" data-step="1" data-unit="v"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Detune</div>
+                    <div class="knob" data-bind="osc.4.detune" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                  </div>
+                </div>
+                <div class="row three">
+                  <div class="control">
+                    <div class="label">Semi</div>
+                    <div class="knob" data-bind="osc.4.semi" data-min="-24" data-max="24" data-step="1" data-unit="st"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Fine</div>
+                    <div class="knob" data-bind="osc.4.fine" data-min="-100" data-max="100" data-step="1" data-unit="ct"></div>
+                  </div>
+                  <div class="control">
+                    <div class="label">Level</div>
+                    <div class="knob" data-bind="osc.4.level" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="global">
+                <div class="control">
+                  <div class="label">Master</div>
+                  <div class="knob" data-bind="master.volume" data-min="0" data-max="100" data-step="1" data-unit="%"></div>
+                </div>
+                <div class="meter" aria-label="Output meter (cosmetic)">
+                  <div class="meter-bar" id="meterBar"></div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

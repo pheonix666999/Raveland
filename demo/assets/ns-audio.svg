@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="NS Audio">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#a79678" stop-opacity="0.95"/>
+    </linearGradient>
+  </defs>
+  <rect x="0.5" y="0.5" width="159" height="31" rx="12" fill="rgba(0,0,0,0.30)" stroke="rgba(167,150,120,0.30)"/>
+  <text x="16" y="21" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" font-weight="900" font-size="16" letter-spacing="3" fill="url(#g)">NS</text>
+  <text x="62" y="21" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" font-weight="700" font-size="12" letter-spacing="2" fill="#a79678">AUDIO</text>
+</svg>
+
