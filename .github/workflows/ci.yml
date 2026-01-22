@@ -18,6 +18,11 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Verify Submodules
+      run: |
+        ls -la extern/
+        ls -la extern/JUCE/
+
     - name: Setup MSVC
       uses: ilammy/msvc-dev-cmd@v1
 
@@ -31,11 +36,13 @@ jobs:
 
     - name: Configure CMake
       working-directory: build
-      run: cmake .. -DCMAKE_BUILD_TYPE=Release
+      run: |
+        ls -la ../extern/JUCE/
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DJUCE_BUILD_EXAMPLES=OFF -DJUCE_BUILD_EXTRAS=OFF
 
     - name: Build
       working-directory: build
-      run: cmake --build . --config Release
+      run: cmake --build . --config Release --parallel 2
 
     - name: List Build Artifacts
       working-directory: build
@@ -57,8 +64,10 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Initialize Submodules
-      run: git submodule update --init --recursive
+    - name: Verify Submodules
+      run: |
+        ls -la extern/
+        ls -la extern/JUCE/
 
     - name: Install CMake
       run: brew install cmake
@@ -68,11 +77,13 @@ jobs:
 
     - name: Configure CMake
       working-directory: build
-      run: cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+      run: |
+        ls -la ../extern/JUCE/
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -DJUCE_BUILD_EXAMPLES=OFF -DJUCE_BUILD_EXTRAS=OFF
 
     - name: Build
       working-directory: build
-      run: cmake --build . --config Release
+      run: cmake --build . --config Release --parallel 2
 
     - name: List Build Artifacts
       working-directory: build
@@ -95,8 +106,10 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Initialize Submodules
-      run: git submodule update --init --recursive
+    - name: Verify Submodules
+      run: |
+        ls -la extern/
+        ls -la extern/JUCE/
 
     - name: Install Dependencies
       run: |
@@ -108,11 +121,13 @@ jobs:
 
     - name: Configure CMake
       working-directory: build
-      run: cmake .. -DCMAKE_BUILD_TYPE=Release
+      run: |
+        ls -la ../extern/JUCE/
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DJUCE_BUILD_EXAMPLES=OFF -DJUCE_BUILD_EXTRAS=OFF
 
     - name: Build
       working-directory: build
-      run: cmake --build . --config Release
+      run: cmake --build . --config Release --parallel 2
 
     - name: List Build Artifacts
       working-directory: build
