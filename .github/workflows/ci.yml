@@ -19,9 +19,11 @@ jobs:
         submodules: recursive
 
     - name: Verify Submodules
+      shell: pwsh
       run: |
-        ls -la extern
-        ls -la extern/JUCE
+        git submodule status --recursive
+        Get-ChildItem -Force extern
+        Get-ChildItem -Force extern/JUCE
 
     - name: Setup MSVC
       uses: ilammy/msvc-dev-cmd@v1
