@@ -39,6 +39,12 @@ target_compile_definitions(Raveland
         JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0)
 
+if (MSVC)
+    target_compile_options(Raveland PRIVATE /EHsc)
+else()
+    target_compile_options(Raveland PRIVATE -fexceptions)
+endif()
+
 target_link_libraries(Raveland
     PRIVATE
         juce::juce_audio_utils
@@ -51,4 +57,3 @@ target_link_libraries(Raveland
         juce::juce_gui_basics
         juce::juce_graphics
         juce::juce_core)
-

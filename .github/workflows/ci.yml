@@ -40,7 +40,7 @@ jobs:
       working-directory: build
       run: |
         dir ..\extern\JUCE
-        cmake .. -DCMAKE_BUILD_TYPE=Release -DJUCE_BUILD_EXAMPLES=OFF -DJUCE_BUILD_EXTRAS=OFF -DCMAKE_CXX_FLAGS="/MP"
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DJUCE_BUILD_EXAMPLES=OFF -DJUCE_BUILD_EXTRAS=OFF -DCMAKE_CXX_FLAGS="/MP /EHsc"
       shell: cmd
 
     - name: Build
