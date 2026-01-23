@@ -12,6 +12,9 @@ env:
 jobs:
   build-windows:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
 
     steps:
     - uses: actions/checkout@v4
@@ -19,7 +22,6 @@ jobs:
         submodules: recursive
 
     - name: Verify Submodules
-      shell: pwsh
       run: |
         git submodule status --recursive
         Get-ChildItem -Force extern
@@ -30,34 +32,26 @@ jobs:
 
     - name: Install CMake
       run: |
-        choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
-
-    - name: Create Build Directory
-      run: mkdir build
-      shell: cmd
+        choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
 
     - name: Configure CMake
-      working-directory: build
       run: |
-        dir ..\extern\JUCE
-        cmake .. -DCMAKE_BUILD_TYPE=Release -DJUCE_BUILD_EXAMPLES=OFF -DJUCE_BUILD_EXTRAS=OFF -DCMAKE_CXX_FLAGS="/MP /EHsc"
-      shell: cmd
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DJUCE_BUILD_EXAMPLES=OFF -DJUCE_BUILD_EXTRAS=OFF -DCMAKE_CXX_FLAGS="/MP /EHsc"
 
     - name: Build
-      working-directory: build
-      run: cmake --build . --config Release --parallel 2
+      run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel 2
 
     - name: List Build Artifacts
-      working-directory: build
-      run: dir Raveland_artefacts\Release /s /b
+      shell: cmd
+      run: dir build\\Raveland_artefacts\\%BUILD_TYPE% /s /b
 
     - name: Upload Windows Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: Raveland-Windows
         path: |
-          build/Raveland_artefacts/Release/Standalone/RaveLand.exe
-          build/Raveland_artefacts/Release/VST3/RaveLand.vst3/
+          build/Raveland_artefacts/${{ env.BUILD_TYPE }}/Standalone/RaveLand.exe
+          build/Raveland_artefacts/${{ env.BUILD_TYPE }}/VST3/RaveLand.vst3/
 
   build-macos:
     runs-on: macos-latest
@@ -97,5 +91,5 @@ jobs:
       with:
         name: Raveland-macOS
         path: |
-          build/Raveland_artefacts/Release/Standalone/RaveLand.app/
-          build/Raveland_artefacts/Release/VST3/RaveLand.vst3/
+          build/Raveland_artefacts/${{ env.BUILD_TYPE }}/Standalone/RaveLand.app/
+          build/Raveland_artefacts/${{ env.BUILD_TYPE }}/VST3/RaveLand.vst3/
