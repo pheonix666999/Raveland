@@ -5,6 +5,19 @@ project(Raveland VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# macOS defaults:
+# - Universal binary so hosts running Intel/Rosetta/Apple Silicon can load the plugin.
+# - Conservative deployment target to avoid "too new" binaries on client machines.
+if(APPLE)
+    if(NOT DEFINED CMAKE_OSX_ARCHITECTURES)
+        set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for macOS" FORCE)
+    endif()
+
+    if(NOT DEFINED CMAKE_OSX_DEPLOYMENT_TARGET)
+        set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum macOS version" FORCE)
+    endif()
+endif()
+
 add_subdirectory(extern/JUCE)
 
 juce_add_plugin(Raveland

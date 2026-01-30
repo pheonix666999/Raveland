@@ -62,6 +62,16 @@ cmake --build . --config Release
 2. Copy `build/Raveland_artefacts/Release/AU/RaveLand.component/` to `/Library/Audio/Plug-Ins/Components/`
 3. Restart your DAW
 
+##### macOS Gatekeeper ("damaged file") and FL Studio not loading the VST3
+If macOS shows **"RaveLand.vst3 is damaged and can’t be opened"**, that is Gatekeeper blocking the plugin bundle.
+This typically happens when the bundle is **not notarized** (or is quarantined due to download).
+
+To prevent this for clients/end-users, you must distribute a **Developer ID signed + notarized** build.
+
+- CI supports optional signing + notarization on macOS (see `.github/workflows/ci.yml` and `scripts/macos_sign_and_notarize.sh`).
+- If you are testing locally and understand the implications, you can clear quarantine:
+  - `scripts/macos_clear_quarantine.sh`
+
 #### Linux (VST3/LV2)
 1. Copy `build/Raveland_artefacts/Release/VST3/RaveLand.vst3/` to your VST3 directory
 2. Copy `build/Raveland_artefacts/Release/LV2/RaveLand.lv2/` to your LV2 directory

@@ -98,6 +98,9 @@ Thumbs.db
 *.log
 logs/
 
+# Distribution output
+dist/
+
 # Runtime data
 pids
 *.pid
