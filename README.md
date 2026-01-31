@@ -62,6 +62,21 @@ cmake --build . --config Release
 2. Copy `build/Raveland_artefacts/Release/AU/RaveLand.component/` to `/Library/Audio/Plug-Ins/Components/`
 3. Restart your DAW
 
+##### Why you don’t see an AU in your screenshot
+The folder in your screenshot contains `*.vcxproj`, `*.sln`, `x64/`, etc. That means it is a **Windows Visual Studio build directory**.
+**Audio Unit (AU) is macOS-only**, so it will never be produced by a Windows build folder (even if you open that folder on a Mac via sync/zip).
+
+To get the AU, you must build on macOS (Xcode/clang). After a macOS build you should see:
+- `build/Raveland_artefacts/Release/AU/RaveLand.component`
+
+##### “Double click to install” for customers (recommended)
+For customer-friendly delivery on macOS, ship a signed installer package:
+- `dist/RaveLand-Installer.pkg` (created on macOS by CI when signing secrets are configured)
+
+This installs to the standard system locations:
+- `/Library/Audio/Plug-Ins/VST3/RaveLand.vst3`
+- `/Library/Audio/Plug-Ins/Components/RaveLand.component`
+
 ##### macOS Gatekeeper ("damaged file") and FL Studio not loading the VST3
 If macOS shows **"RaveLand.vst3 is damaged and can’t be opened"**, that is Gatekeeper blocking the plugin bundle.
 This typically happens when the bundle is **not notarized** (or is quarantined due to download).

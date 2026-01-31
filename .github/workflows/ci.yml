@@ -123,6 +123,14 @@ jobs:
         set -euo pipefail
         bash scripts/macos_sign_and_notarize.sh build/Raveland_artefacts/Release dist
 
+    - name: Build macOS installer package (.pkg) (optional)
+      if: ${{ secrets.MACOS_CERT_P12_BASE64 != '' && secrets.MACOS_CERT_PASSWORD != '' && secrets.MACOS_SIGNING_IDENTITY != '' }}
+      env:
+        APPLE_INSTALLER_IDENTITY: ${{ secrets.MACOS_INSTALLER_IDENTITY }}
+      run: |
+        set -euo pipefail
+        bash scripts/macos_make_installer_pkg.sh build/Raveland_artefacts/Release dist
+
     - name: Upload macOS Artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -132,3 +140,4 @@ jobs:
           build/Raveland_artefacts/${{ env.BUILD_TYPE }}/VST3/RaveLand.vst3/
           build/Raveland_artefacts/${{ env.BUILD_TYPE }}/AU/RaveLand.component/
           dist/RaveLand-macOS.zip
+          dist/RaveLand-Installer.pkg
