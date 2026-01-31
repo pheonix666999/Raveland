@@ -55,6 +55,16 @@ jobs:
 
   build-macos:
     runs-on: macos-latest
+    env:
+      # Expose secrets as env vars so conditionals can use the `env` context (the `secrets` context is not supported in `if:`).
+      MACOS_CERT_P12_BASE64: ${{ secrets.MACOS_CERT_P12_BASE64 }}
+      MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+      MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+      MACOS_INSTALLER_IDENTITY: ${{ secrets.MACOS_INSTALLER_IDENTITY }}
+
+      APPLE_NOTARY_KEY_BASE64: ${{ secrets.APPLE_NOTARY_KEY_BASE64 }}
+      APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+      APPLE_NOTARY_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
 
     steps:
     - uses: actions/checkout@v4
@@ -87,11 +97,11 @@ jobs:
       run: find Raveland_artefacts -type f -name "*" | head -20
 
     - name: Prepare code signing (optional)
-      if: ${{ secrets.MACOS_CERT_P12_BASE64 != '' && secrets.MACOS_CERT_PASSWORD != '' && secrets.MACOS_SIGNING_IDENTITY != '' }}
+      if: ${{ env.MACOS_CERT_P12_BASE64 != '' && env.MACOS_CERT_PASSWORD != '' && env.MACOS_SIGNING_IDENTITY != '' }}
       run: |
         set -euo pipefail
         CERT_P12="$RUNNER_TEMP/cert.p12"
-        echo "${{ secrets.MACOS_CERT_P12_BASE64 }}" | base64 --decode > "$CERT_P12"
+        echo "$MACOS_CERT_P12_BASE64" | base64 --decode > "$CERT_P12"
 
         KEYCHAIN_PASSWORD="$(uuidgen)"
         echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> "$GITHUB_ENV"
@@ -101,32 +111,32 @@ jobs:
         security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
         security set-keychain-settings -lut 21600 build.keychain
 
-        security import "$CERT_P12" -k build.keychain -P "${{ secrets.MACOS_CERT_PASSWORD }}" -T /usr/bin/codesign
+        security import "$CERT_P12" -k build.keychain -P "$MACOS_CERT_PASSWORD" -T /usr/bin/codesign
         security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
 
     - name: Write notarization key (optional)
-      if: ${{ secrets.APPLE_NOTARY_KEY_BASE64 != '' }}
+      if: ${{ env.APPLE_NOTARY_KEY_BASE64 != '' }}
       run: |
         set -euo pipefail
         NOTARY_KEY="$RUNNER_TEMP/notary_api_key.p8"
-        echo "${{ secrets.APPLE_NOTARY_KEY_BASE64 }}" | base64 --decode > "$NOTARY_KEY"
+        echo "$APPLE_NOTARY_KEY_BASE64" | base64 --decode > "$NOTARY_KEY"
         echo "APPLE_NOTARY_KEY_PATH=$NOTARY_KEY" >> "$GITHUB_ENV"
 
     - name: Sign + notarize artefacts (optional, recommended for distribution)
-      if: ${{ secrets.MACOS_CERT_P12_BASE64 != '' && secrets.MACOS_CERT_PASSWORD != '' && secrets.MACOS_SIGNING_IDENTITY != '' }}
+      if: ${{ env.MACOS_CERT_P12_BASE64 != '' && env.MACOS_CERT_PASSWORD != '' && env.MACOS_SIGNING_IDENTITY != '' }}
       env:
-        APPLE_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
-        APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
-        APPLE_NOTARY_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
+        APPLE_SIGNING_IDENTITY: ${{ env.MACOS_SIGNING_IDENTITY }}
+        APPLE_NOTARY_KEY_ID: ${{ env.APPLE_NOTARY_KEY_ID }}
+        APPLE_NOTARY_ISSUER_ID: ${{ env.APPLE_NOTARY_ISSUER_ID }}
         APPLE_NOTARY_KEY_PATH: ${{ env.APPLE_NOTARY_KEY_PATH }}
       run: |
         set -euo pipefail
         bash scripts/macos_sign_and_notarize.sh build/Raveland_artefacts/Release dist
 
     - name: Build macOS installer package (.pkg) (optional)
-      if: ${{ secrets.MACOS_CERT_P12_BASE64 != '' && secrets.MACOS_CERT_PASSWORD != '' && secrets.MACOS_SIGNING_IDENTITY != '' }}
+      if: ${{ env.MACOS_CERT_P12_BASE64 != '' && env.MACOS_CERT_PASSWORD != '' && env.MACOS_SIGNING_IDENTITY != '' }}
       env:
-        APPLE_INSTALLER_IDENTITY: ${{ secrets.MACOS_INSTALLER_IDENTITY }}
+        APPLE_INSTALLER_IDENTITY: ${{ env.MACOS_INSTALLER_IDENTITY }}
       run: |
         set -euo pipefail
         bash scripts/macos_make_installer_pkg.sh build/Raveland_artefacts/Release dist
