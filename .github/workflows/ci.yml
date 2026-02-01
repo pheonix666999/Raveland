@@ -10,49 +10,6 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: pwsh
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
-
-    - name: Verify Submodules
-      run: |
-        git submodule status --recursive
-        Get-ChildItem -Force extern
-        Get-ChildItem -Force extern/JUCE
-
-    - name: Setup MSVC
-      uses: ilammy/msvc-dev-cmd@v1
-
-    - name: Install CMake
-      run: |
-        choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
-
-    - name: Configure CMake
-      run: |
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DJUCE_BUILD_EXAMPLES=OFF -DJUCE_BUILD_EXTRAS=OFF -DCMAKE_CXX_FLAGS="/MP /EHsc"
-
-    - name: Build
-      run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel 2
-
-    - name: List Build Artifacts
-      shell: cmd
-      run: dir build\\Raveland_artefacts\\%BUILD_TYPE% /s /b
-
-    - name: Upload Windows Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: Raveland-Windows
-        path: |
-          build/Raveland_artefacts/${{ env.BUILD_TYPE }}/Standalone/RaveLand.exe
-          build/Raveland_artefacts/${{ env.BUILD_TYPE }}/VST3/RaveLand.vst3/
-
   build-macos:
     runs-on: macos-latest
     env:
@@ -86,11 +43,13 @@ jobs:
       working-directory: build
       run: |
         ls -la ../extern/JUCE/
-        cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -DJUCE_BUILD_EXAMPLES=OFF -DJUCE_BUILD_EXTRAS=OFF -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations"
+        cmake .. -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -DJUCE_BUILD_EXAMPLES=OFF -DJUCE_BUILD_EXTRAS=OFF -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations"
 
     - name: Build
       working-directory: build
-      run: cmake --build . --config Release --parallel 2
+      run: |
+        set -euo pipefail
+        cmake --build . --config ${{ env.BUILD_TYPE }} --parallel 2 --target Raveland_Standalone Raveland_VST3 Raveland_AU
 
     - name: List Build Artifacts
       working-directory: build
