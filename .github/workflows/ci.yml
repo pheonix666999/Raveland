@@ -96,6 +96,20 @@ jobs:
       working-directory: build
       run: find Raveland_artefacts -type f -name "*" | head -20
 
+    - name: Assert AU/VST3 outputs exist
+      working-directory: build
+      run: |
+        set -euo pipefail
+        echo "Listing build/Raveland_artefacts:"
+        find Raveland_artefacts -maxdepth 3 -type d -print
+
+        echo "Expected macOS plugin bundles:"
+        find Raveland_artefacts -maxdepth 4 -type d \( -name "*.component" -o -name "*.vst3" -o -name "*.app" \) -print
+
+        test -d "Raveland_artefacts/Release/VST3/RaveLand.vst3"
+        test -d "Raveland_artefacts/Release/AU/RaveLand.component"
+        test -d "Raveland_artefacts/Release/Standalone/RaveLand.app"
+
     - name: Prepare code signing (optional)
       if: ${{ env.MACOS_CERT_P12_BASE64 != '' && env.MACOS_CERT_PASSWORD != '' && env.MACOS_SIGNING_IDENTITY != '' }}
       run: |

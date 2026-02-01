@@ -20,6 +20,11 @@ endif()
 
 add_subdirectory(extern/JUCE)
 
+set(RAVELAND_FORMATS VST3 Standalone)
+if(APPLE)
+    list(APPEND RAVELAND_FORMATS AU)
+endif()
+
 juce_add_plugin(Raveland
     COMPANY_NAME "NS Audio"
     COMPANY_WEBSITE "https://nsaudio.example"
@@ -31,7 +36,7 @@ juce_add_plugin(Raveland
     COPY_PLUGIN_AFTER_BUILD FALSE
     PLUGIN_MANUFACTURER_CODE NSAu
     PLUGIN_CODE RvLd
-    FORMATS VST3 Standalone
+    FORMATS ${RAVELAND_FORMATS}
     PRODUCT_NAME "RaveLand")
 
 target_sources(Raveland
