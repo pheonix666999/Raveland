@@ -10,6 +10,7 @@ set -euo pipefail
 #
 # Optional env vars:
 #   APPLE_INSTALLER_IDENTITY="Developer ID Installer: Company (TEAMID)"   (sign the .pkg)
+#   APPLE_NOTARY_KEY_ID / APPLE_NOTARY_ISSUER_ID / APPLE_NOTARY_KEY_PATH  (notarize + staple the signed .pkg)
 #
 # This script must be run on macOS.
 
@@ -52,14 +53,34 @@ pkgbuild \
   --install-location "/" \
   "${unsigned_pkg}"
 
-final_pkg="${out_dir}/RaveLand-Installer.pkg"
-rm -f "${final_pkg}"
+out_unsigned_pkg="${out_dir}/RaveLand-Installer-unsigned.pkg"
+rm -f "${out_unsigned_pkg}"
+cp -f "${unsigned_pkg}" "${out_unsigned_pkg}"
+echo "Wrote: ${out_unsigned_pkg}"
 
 if [[ -n "${APPLE_INSTALLER_IDENTITY:-}" ]]; then
+  final_pkg="${out_dir}/RaveLand-Installer.pkg"
+  rm -f "${final_pkg}"
+
   productsign --sign "${APPLE_INSTALLER_IDENTITY}" "${unsigned_pkg}" "${final_pkg}"
-else
-  cp -f "${unsigned_pkg}" "${final_pkg}"
+  echo "Wrote: ${final_pkg}"
+
+  key_id="${APPLE_NOTARY_KEY_ID:-}"
+  issuer_id="${APPLE_NOTARY_ISSUER_ID:-}"
+  key_path="${APPLE_NOTARY_KEY_PATH:-}"
+
+  if [[ -n "${key_id}" && -n "${issuer_id}" && -n "${key_path}" ]]; then
+    if [[ ! -f "${key_path}" ]]; then
+      echo "ERROR: APPLE_NOTARY_KEY_PATH does not exist: ${key_path}" >&2
+      exit 4
+    fi
+
+    echo "Notarizing installer package..."
+    xcrun notarytool submit "${final_pkg}" --key-id "${key_id}" --issuer "${issuer_id}" --key "${key_path}" --wait
+    xcrun stapler staple "${final_pkg}"
+    xcrun stapler validate "${final_pkg}"
+    echo "Notarized + stapled: ${final_pkg}"
+  else
+    echo "NOTE: Notarization creds not set; produced a signed but NOT notarized .pkg."
+  fi
 fi
-
-echo "Wrote: ${final_pkg}"
-
