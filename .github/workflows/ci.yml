@@ -154,17 +154,45 @@ jobs:
       shell: pwsh
       run: |
         $ErrorActionPreference = "Stop"
-        $candidates = @(
+        $chocoRoot = $env:ChocolateyInstall
+        if ([string]::IsNullOrWhiteSpace($chocoRoot)) { $chocoRoot = "C:\\ProgramData\\chocolatey" }
+
+        $searchRoots = @(
           "${env:ProgramFiles(x86)}\\NSIS",
-          (Join-Path $env:ChocolateyInstall "lib\\nsis.install\\tools"),
-          (Join-Path $env:ChocolateyInstall "lib\\nsis\\tools")
+          "${env:ProgramFiles}\\NSIS",
+          (Join-Path $chocoRoot "lib\\nsis.install\\tools"),
+          (Join-Path $chocoRoot "lib\\nsis\\tools"),
+          (Join-Path $chocoRoot "bin")
         ) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -Unique
 
-        foreach ($p in $candidates) {
-          $p | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        Write-Host "Searching for makensis.exe under:"
+        $searchRoots | ForEach-Object { Write-Host "  - $_" }
+
+        $found = @()
+        foreach ($r in $searchRoots) {
+          $found += Get-ChildItem -Path $r -Filter makensis.exe -Recurse -File -ErrorAction SilentlyContinue
+        }
+        $found = $found | Select-Object -First 10
+
+        if ($found.Count -gt 0) {
+          $dirs = $found | ForEach-Object { $_.Directory.FullName } | Select-Object -Unique
+          foreach ($d in $dirs) {
+            $d | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          }
+          Write-Host "Added to PATH:"
+          $dirs | ForEach-Object { Write-Host "  - $_" }
         }
 
-        where.exe makensis
+        $cmd = Get-Command makensis -ErrorAction SilentlyContinue
+        if (-not $cmd -and $found.Count -gt 0) { $cmd = $found[0].FullName }
+
+        if (-not $cmd) {
+          Write-Error "makensis.exe not found after installing NSIS."
+          exit 1
+        }
+
+        Write-Host "makensis resolved as: $cmd"
+        & $cmd /VERSION
 
     - name: Configure CMake
       run: |
