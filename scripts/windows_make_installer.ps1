@@ -20,9 +20,17 @@ function Find-MakeNsis {
   $cmd = Get-Command makensis -ErrorAction SilentlyContinue
   if ($cmd) { return $cmd.Source }
 
+  $chocoRoot = $env:ChocolateyInstall
+  if ([string]::IsNullOrWhiteSpace($chocoRoot)) {
+    $chocoRoot = "C:\ProgramData\chocolatey"
+  }
+
   $candidates = @(
     "$env:ProgramFiles\NSIS\makensis.exe",
-    "$env:ProgramFiles(x86)\NSIS\makensis.exe"
+    "$env:ProgramFiles(x86)\NSIS\makensis.exe",
+    (Join-Path $chocoRoot "lib\nsis\tools\makensis.exe"),
+    (Join-Path $chocoRoot "lib\nsis.install\tools\makensis.exe"),
+    (Join-Path $chocoRoot "bin\makensis.exe")
   )
   foreach ($c in $candidates) {
     if (Test-Path -LiteralPath $c) { return $c }

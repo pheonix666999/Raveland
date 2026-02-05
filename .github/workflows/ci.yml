@@ -148,7 +148,23 @@ jobs:
 
     - name: Install NSIS
       run: |
-        choco install nsis -y
+        choco install nsis.install -y
+
+    - name: Add NSIS to PATH
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = "Stop"
+        $candidates = @(
+          "${env:ProgramFiles(x86)}\\NSIS",
+          (Join-Path $env:ChocolateyInstall "lib\\nsis.install\\tools"),
+          (Join-Path $env:ChocolateyInstall "lib\\nsis\\tools")
+        ) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -Unique
+
+        foreach ($p in $candidates) {
+          $p | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        }
+
+        where.exe makensis
 
     - name: Configure CMake
       run: |
