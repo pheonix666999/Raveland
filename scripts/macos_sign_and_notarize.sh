@@ -5,6 +5,7 @@ artefacts_dir="${1:-build/Raveland_artefacts/Release}"
 out_dir="${2:-dist}"
 
 identity="${APPLE_SIGNING_IDENTITY:-}"
+require_notarization="${REQUIRE_NOTARIZATION:-0}"
 if [[ -z "${identity}" ]]; then
   echo "ERROR: APPLE_SIGNING_IDENTITY is required (e.g. 'Developer ID Application: Your Company (TEAMID)')" >&2
   exit 2
@@ -30,6 +31,22 @@ if [[ "${#targets[@]}" -eq 0 ]]; then
   exit 3
 fi
 
+if [[ "${require_notarization}" != "0" ]]; then
+  if [[ -z "${key_id}" || -z "${issuer_id}" || -z "${key_path}" ]]; then
+    cat >&2 <<'EOF'
+ERROR: REQUIRE_NOTARIZATION is set, but notarization credentials are missing.
+       Provide APPLE_NOTARY_KEY_ID / APPLE_NOTARY_ISSUER_ID / APPLE_NOTARY_KEY_PATH.
+EOF
+    exit 4
+  fi
+fi
+
+echo "Clearing quarantine attributes (if any):"
+for t in "${targets[@]}"; do
+  echo "  - ${t}"
+  xattr -cr "${t}" || true
+done
+
 echo "Signing:"
 for t in "${targets[@]}"; do
   echo "  - ${t}"
@@ -51,7 +68,7 @@ EOF
 else
   if [[ ! -f "${key_path}" ]]; then
     echo "ERROR: APPLE_NOTARY_KEY_PATH does not exist: ${key_path}" >&2
-    exit 4
+    exit 5
   fi
 
   tmp_zip="$(mktemp -t raveland_notary.XXXXXX).zip"
@@ -86,4 +103,3 @@ done
 
 /usr/bin/ditto -c -k --sequesterRsrc --keepParent "${stage_dir}" "${dist_zip}"
 echo "Wrote: ${dist_zip}"
-

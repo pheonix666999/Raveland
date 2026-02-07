@@ -29,6 +29,7 @@ Windows "unknown publisher / blocked" warnings are fixed for customers by:
 - Code-signing the `.exe` and the VST3 binary with an Authenticode certificate
 
 This repo contains scripts + a GitHub Actions pipeline that can build installers and (optionally) sign/notarize when you provide the certificates as secrets.
+When `REQUIRE_NOTARIZATION=1` is set (CI does this on push), the build will fail if notarization credentials are missing, preventing accidental distribution of unsigned builds.
 
 ## Customer delivery (what you should ship)
 
@@ -54,6 +55,15 @@ GitHub Actions uploads two artifacts on every push:
 - Per-user: `~/Library/Audio/Plug-Ins/VST3/`
 
 After copying, restart your DAW and rescan plugins.
+
+## Sample library location
+The plugin scans for sample stacks in these locations (first match wins):
+- macOS: `/Library/Application Support/NS Audio/RaveLand/Samples`
+- Windows: `C:\ProgramData\NS Audio\RaveLand\Samples`
+- Next to the plugin executable: `Samples`
+- Override: set `RAVELAND_SAMPLE_PATH`
+
+Each subfolder inside `Samples` is treated as a selectable stack in the layer dropdown.
 
 ## macOS - build from source (developer)
 
@@ -108,4 +118,3 @@ If you must test an unsigned download on macOS, you can remove quarantine attrib
 ## About the UI
 
 `demo/` contains an HTML prototype used for design iteration. The actual plugin UI is implemented in `source/`.
-

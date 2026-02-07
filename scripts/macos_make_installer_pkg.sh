@@ -16,6 +16,7 @@ set -euo pipefail
 
 artefacts_dir="${1:-build/Raveland_artefacts/Release}"
 out_dir="${2:-dist}"
+require_notarization="${REQUIRE_NOTARIZATION:-0}"
 
 vst3_src="${artefacts_dir}/VST3/RaveLand.vst3"
 au_src="${artefacts_dir}/AU/RaveLand.component"
@@ -81,6 +82,10 @@ if [[ -n "${APPLE_INSTALLER_IDENTITY:-}" ]]; then
     xcrun stapler validate "${final_pkg}"
     echo "Notarized + stapled: ${final_pkg}"
   else
+    if [[ "${require_notarization}" != "0" ]]; then
+      echo "ERROR: REQUIRE_NOTARIZATION is set, but notarization creds are missing for the .pkg." >&2
+      exit 5
+    fi
     echo "NOTE: Notarization creds not set; produced a signed but NOT notarized .pkg."
   fi
 fi

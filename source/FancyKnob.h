@@ -1,115 +1,111 @@
 #pragma once
 
 #include <juce_gui_basics/juce_gui_basics.h>
+#include <cmath>
+#include <functional>
 
 class FancyKnob : public juce::Slider
 {
 public:
+    using Formatter = std::function<juce::String(float)>;
+
     FancyKnob() : juce::Slider()
     {
         setSliderStyle(RotaryHorizontalVerticalDrag);
         setTextBoxStyle(NoTextBox, false, 0, 0);
-        setColour(rotarySliderFillColourId, juce::Colour::fromString("0xff00d4ff"));
-        setColour(rotarySliderOutlineColourId, juce::Colour::fromString("0xffd4af37").withAlpha(0.6f));
+        setColour(rotarySliderFillColourId, juce::Colour::fromString("0xffa79678"));
+        setColour(rotarySliderOutlineColourId, juce::Colour::fromString("0xffa79678").withAlpha(0.7f));
+    }
+
+    void setFormatter(Formatter fmt)
+    {
+        formatter = std::move(fmt);
+        repaint();
     }
 
     void paint(juce::Graphics& g) override
     {
         auto bounds = getLocalBounds().toFloat();
-        const float centreX = bounds.getCentreX();
-        const float centreY = bounds.getCentreY();
-        const float outerRadius = juce::jmin(bounds.getWidth(), bounds.getHeight()) * 0.45f;
-        const float innerRadius = outerRadius * 0.7f;
+        const float readoutH = juce::jlimit(14.0f, 22.0f, bounds.getHeight() * 0.22f);
+        auto knobArea = bounds;
+        knobArea.removeFromBottom(readoutH * 0.6f);
+        const float diameter = juce::jmax(10.0f, juce::jmin(knobArea.getWidth(), knobArea.getHeight()));
+        const float centreX = knobArea.getCentreX();
+        const float centreY = knobArea.getCentreY();
+        const float outerRadius = diameter * 0.58f;
+        const float innerRadius = outerRadius * 0.82f;
 
-        const double time = juce::Time::getMillisecondCounterHiRes() * 0.001;
-        const float pulse = 0.6f + 0.4f * std::sin(time * 3.0f);
+        const juce::Colour gold = juce::Colour::fromString("0xffa79678");
+        const juce::Colour goldBright = juce::Colour::fromString("0xffc3aa86");
+        const juce::Colour knobDark = juce::Colour::fromRGB(26, 28, 32);
+        const juce::Colour knobMid = juce::Colour::fromRGB(44, 46, 50);
 
-        // Outer shadow/glow
-        juce::ColourGradient outerGlow(juce::Colour::fromString("0xffff2fb2").withAlpha(0.3f * pulse), centreX, centreY,
-                                       juce::Colours::transparentBlack, centreX, centreY, true);
-        g.setGradientFill(outerGlow);
-        g.fillEllipse(centreX - outerRadius * 1.4f, centreY - outerRadius * 1.4f, outerRadius * 2.8f, outerRadius * 2.8f);
+        // Shadow
+        g.setColour(juce::Colours::black.withAlpha(0.6f));
+        g.fillEllipse(centreX - outerRadius - 2.0f, centreY - outerRadius + 1.5f, outerRadius * 2.0f + 4.0f, outerRadius * 2.0f + 4.0f);
 
-        // Main knob body - black with subtle gradients
-        juce::ColourGradient bodyGrad(juce::Colour::fromRGB(20, 20, 25), centreX, centreY - innerRadius,
-                                      juce::Colour::fromRGB(10, 10, 15), centreX, centreY + innerRadius, false);
+        // Rim
+        g.setColour(juce::Colours::black.withAlpha(0.85f));
+        g.fillEllipse(centreX - outerRadius, centreY - outerRadius, outerRadius * 2.0f, outerRadius * 2.0f);
+
+        // Knob body
+        juce::ColourGradient bodyGrad(knobMid, centreX, centreY - innerRadius,
+                                      knobDark, centreX, centreY + innerRadius, false);
         g.setGradientFill(bodyGrad);
         g.fillEllipse(centreX - innerRadius, centreY - innerRadius, innerRadius * 2.0f, innerRadius * 2.0f);
 
-        // Subtle inner highlight for depth
-        juce::ColourGradient highlightGrad(juce::Colour::fromRGB(35, 35, 40).withAlpha(0.6f), centreX - innerRadius * 0.3f, centreY - innerRadius * 0.7f,
-                                          juce::Colour::fromRGB(45, 45, 50).withAlpha(0.3f), centreX + innerRadius * 0.3f, centreY + innerRadius * 0.3f, false);
+        // Subtle highlight
+        juce::ColourGradient highlightGrad(juce::Colours::white.withAlpha(0.06f), centreX - innerRadius * 0.4f, centreY - innerRadius * 0.9f,
+                                           juce::Colours::transparentBlack, centreX + innerRadius * 0.6f, centreY + innerRadius * 0.2f, false);
         g.setGradientFill(highlightGrad);
-        g.fillEllipse(centreX - innerRadius * 0.8f, centreY - innerRadius * 0.8f, innerRadius * 1.6f, innerRadius * 1.6f);
+        g.fillEllipse(centreX - innerRadius, centreY - innerRadius, innerRadius * 2.0f, innerRadius * 2.0f);
 
-        // Tick marks around the knob
-        g.setColour(juce::Colour::fromString("0xffa79678").withAlpha(0.6f));
-        for (int i = 0; i < 12; ++i)
-        {
-            const float angle = juce::degreesToRadians((float)i * 30.0f);
-            const float tickInner = innerRadius * 0.9f;
-            const float tickOuter = outerRadius * 0.95f;
-            const float x1 = centreX + tickInner * std::cos(angle);
-            const float y1 = centreY + tickInner * std::sin(angle);
-            const float x2 = centreX + tickOuter * std::cos(angle);
-            const float y2 = centreY + tickOuter * std::sin(angle);
-            g.drawLine(x1, y1, x2, y2, (i % 3 == 0) ? 2.0f : 1.0f);
-        }
+        // Thin gold ring
+        g.setColour(gold.withAlpha(0.65f));
+        g.drawEllipse(centreX - innerRadius, centreY - innerRadius, innerRadius * 2.0f, innerRadius * 2.0f, 1.2f);
 
-        // Outer ring with subtle gradient
-        juce::ColourGradient ringGrad(juce::Colour::fromString("0xffa79678").withAlpha(0.8f), centreX, centreY - outerRadius,
-                                      juce::Colour::fromString("0xffa79678").withAlpha(0.4f), centreX, centreY + outerRadius, false);
-        g.setGradientFill(ringGrad);
-        g.drawEllipse(centreX - outerRadius, centreY - outerRadius, outerRadius * 2.0f, outerRadius * 2.0f, 3.0f);
-
-        // Neon accent ring
-        g.setColour(juce::Colour::fromString("0xffff2fb2").withAlpha(0.7f * pulse));
-        g.drawEllipse(centreX - outerRadius + 1, centreY - outerRadius + 1, outerRadius * 2.0f - 2.0f, outerRadius * 2.0f - 2.0f, 1.5f);
-
-        // Value indicator arc
+        // Value indicator
         const double minVal = getMinimum();
         const double maxVal = getMaximum();
         const double range = maxVal - minVal;
         const float normalizedValue = (range > 0.0) ? (float)((getValue() - minVal) / range) : 0.5f;
 
-        juce::Path valueArc;
         const float arcStartAngle = juce::MathConstants<float>::pi * 0.75f;
         const float arcEndAngle = arcStartAngle + normalizedValue * juce::MathConstants<float>::pi * 1.5f;
-        const float arcRadius = outerRadius * 0.85f;
-
-        valueArc.addArc(centreX - arcRadius, centreY - arcRadius, arcRadius * 2.0f, arcRadius * 2.0f,
-                       arcStartAngle, arcEndAngle, true);
-
-        juce::ColourGradient arcGrad(juce::Colour::fromString("0xffff2fb2").withAlpha(0.9f * pulse), centreX, centreY,
-                                     juce::Colour::fromString("0xffa79678").withAlpha(0.7f), centreX, centreY, true);
-        g.setGradientFill(arcGrad);
-        g.strokePath(valueArc, juce::PathStrokeType(4.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
-
-        // Main indicator pointer
         const float indicatorAngle = arcStartAngle + normalizedValue * (arcEndAngle - arcStartAngle);
-        const float indicatorLength = innerRadius * 0.8f;
+        const float indicatorLength = innerRadius * 0.78f;
         const float indicatorX = centreX + indicatorLength * std::cos(indicatorAngle);
         const float indicatorY = centreY + indicatorLength * std::sin(indicatorAngle);
 
-        // Indicator shadow
-        g.setColour(juce::Colours::black.withAlpha(0.5f));
-        g.drawLine(centreX + 1, centreY + 1, indicatorX + 1, indicatorY + 1, 3.0f);
+        // Indicator (short rounded pill)
+        const float markerW = innerRadius * 0.12f;
+        const float markerH = innerRadius * 0.45f;
+        juce::Rectangle<float> marker(-markerW * 0.5f, -innerRadius * 0.92f, markerW, markerH);
+        juce::Path markerPath;
+        markerPath.addRoundedRectangle(marker, markerW * 0.5f);
+        markerPath.applyTransform(juce::AffineTransform::rotation(indicatorAngle).translated(centreX, centreY));
+        g.setColour(goldBright.withAlpha(0.95f));
+        g.fillPath(markerPath);
 
-        // Main indicator
-        juce::ColourGradient indicatorGrad(juce::Colour::fromString("0xffff2fb2").withAlpha(0.95f), centreX, centreY,
-                                           juce::Colour::fromString("0xffa79678").withAlpha(0.8f), indicatorX, indicatorY, false);
-        g.setGradientFill(indicatorGrad);
-        g.drawLine(centreX, centreY, indicatorX, indicatorY, 3.0f);
+        // Readout (high-contrast)
+        const float value = (float) getValue();
+        const int decimals = (std::abs(value) < 10.0f) ? 1 : 0;
+        juce::String text = formatter ? formatter(value) : juce::String(value, decimals);
 
-        // Center indicator dot
-        g.setColour(juce::Colour::fromString("0xffff2fb2").withAlpha(0.9f));
-        g.fillEllipse(centreX - 4, centreY - 4, 8, 8);
+        auto textBounds = bounds.removeFromBottom(readoutH).reduced(2.0f, 1.0f);
+        textBounds.setWidth(juce::jmin(textBounds.getWidth(), diameter * 0.9f));
+        textBounds.setX(centreX - textBounds.getWidth() * 0.5f);
+        g.setColour(juce::Colours::black.withAlpha(0.72f));
+        g.fillRoundedRectangle(textBounds, textBounds.getHeight() * 0.45f);
+        g.setColour(gold.withAlpha(0.55f));
+        g.drawRoundedRectangle(textBounds, textBounds.getHeight() * 0.45f, 0.8f);
 
-        g.setColour(juce::Colour::fromString("0xffa79678"));
-        g.drawEllipse(centreX - 4, centreY - 4, 8, 8, 1.5f);
-
-        // Subtle center highlight
-        g.setColour(juce::Colours::white.withAlpha(0.3f));
-        g.fillEllipse(centreX - 2, centreY - 3, 4, 4);
+        const float fontSize = juce::jlimit(10.0f, 13.5f, textBounds.getHeight() * 0.72f);
+        g.setFont(juce::Font(fontSize, juce::Font::bold));
+        g.setColour(goldBright.withAlpha(0.95f));
+        g.drawText(text, textBounds, juce::Justification::centred, false);
     }
+
+private:
+    Formatter formatter;
 };

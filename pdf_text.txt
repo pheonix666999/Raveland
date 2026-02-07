@@ -1,0 +1,43 @@
+--- page 1 ---
+NS AUDIO SUPER SAW SYNTH Idea name; RAVELAND                          LOGO IDEA: 
+
+--- page 2 ---
+Introduction We’re designing this plugin to be the ultimate tool for creating hard dance, rave techno or trance leads. In the past, producers layered multiple synths to get a thick, stacked sound. We’ve pre-layered audio files from trusted VSTs and hardware like the Access Virus, Roland jp 8080 and more. Making this plugin the ultimate lead layering tool. On the left side of the GUI, users can select from these pre-layered audio stacks. On the right side, they can add thickness with three built-in oscillators, and the center will host the effects section. Let’s dive in!                                  
+
+--- page 3 ---
+Chapter 1: GUI Design Here you can see the design concept for our plugin. We use a black background with gold accents, which is the color combination of our brand. You can recreate this style, and it’s okay to make it a bit more futuristic. However, we’d like the knobs to keep a similar vibe to our current style. The image below is made with Chat GPT. So there might be button mistakes, wrong grammar and maybe knobs that does not even have to be in. It is just about the global design. The main colors of our synth are black and yellow/gold. But we love to see some visual and more futuristic design for this synth. Overview of the GUI: ● On the left side, we’ll have two or three audio samplers where users can load different pre-layered audio lead stacks that we provide. We might call these “layer-oscillators” or simply “audio files.” ● On the right side, we’ll have three real oscillators stacked vertically—these will generate saw waves, pulse waves, and possibly emulate waveforms from the Virus (is this possible). Each oscillator should have at least 16 voices of unison with strong detune capabilities. ● In the middle section, we’ll have the effects. These include reverb (with hall and room settings), delay, chorus (important for leads), and distortion. We might also add an EQ or filter at the top or bottom of the effect section to shape the sound before it hits the distortion.  
+ 
+
+
+--- page 4 ---
+Our other plug-ins Here you see the designs of our other plug-ins. These plug-ins are effects. We love to see our new synth more “modern” but it the same style so people recognize it. 
+    
+ 
+
+
+--- page 5 ---
+Chapter 2: Oscillators For the oscillators, we want all standard waveforms: pulse, saw, sine, and other basics. Each oscillator should support more than 16 voices of unison and have strong detune capabilities. We’ll have a minimum of three oscillators stacked vertically on the right side. Is it possible to somehow import oscilators from the jp8080 and the hypersaw from the virus. We have noth original hardware synths. We can record and send it in.  
+              
+
+
+--- page 6 ---
+Audio Oscillator/samplers:  On the left we would like to have audio samplers. We deliver multiple audio files. We created 115 folders of layered synths. Then in every folder you can find .wav exports of every key on the piano. every export takes around 0:05 seconds.                                
+
+--- page 7 ---
+Chapter 3: Effects The effects go in the center. We’ll include a reverb with hall and room modes, a delay, a chorus effect (crucial for leads), and distortion. We may also add an EQ or filter to shape the sound before it goes into the distortion. This will let users craft huge lead stacks with one synthesizer.                       
+
+--- page 8 ---
+Chapter 4: Additional Controls In the bottom left corner, we’ll add a pitch bend and modulation wheel, as well as a mono/legato switch. This lets users put the synth in mono mode with a portamento knob for smooth pitch glides.  
+
+
+--- page 9 ---
+Extra info:   FX, limits per section) Oscillator  Detune: for the oscillators we would like to have 3 or 4 oscillators on the right side, having as much as detune as possible. Let’s start from 16 each. Just like the Serum, Virus and SYlenth 1.  Tuning: Oscillators include fine tune, osc tune, semi tune. Waveforms: Basics waveforms like SAW (most important we need several versions), pulse, sine (etc and other basic shapes) and if we can re-create the JP 8080 and Hypersaw from serum would be amazing   Modulation; we would like to have an LFO that is working the same as Serum 2. So you can use it as ENV and LFO. Drag & dorp is maybe to difficult? But can we otherwise link it to specific parameters.   FX: In the FX section we would like to see a reverb, delay, distortion, filter. Is it possible to play around with the chain/routing? Or will it be a fixed routing?   Sample details: .wav file 5 seconds each note 104 samples each preset No velocity  If you play multiple time a D (for example) the starting point must be every time somewhere different in the sample so it sound not like re-sampling)  Signal flow / architecture (how oscillators, filters, FX are routed)  Platform; VST3/ AU WIndows and MAC OS (all versions like you mention)  UI references (any existing plugins, exact black–gold style preferences, layout notes) Our normal lay-out is black and gold. Deep black and for letters, sliders etc we use code: #a79678. For this plug-in we want to go a bit more modern! So we made an special logo design. And we would like to work with a color that pops out. Above you can see how we would like to see it placed in the gui, some neon/moving elements to make it less static. For the colors we want to keep to the black & gold but want to add a third color to make it pop out. We think of #FF2FB2. Maybe we can do this as background but at the end we have to check this when the gui gets build and A/B.  So the plug in you see in tis PDF is perfect in design, where stuff must be placed. Also the neon/futuristic style we love. But for the colors its not what we want (it is just a chat GPT mock-up haha).     
+
+--- page 10 ---
+Few examples in style we like: 
+  
+ Both clean plug-ins, not too busy but looking moder.   
+
+
+--- page 11 ---
+KNOBS Above in the PDF you see the knobs we use for our plug-ins. We like to stick to that but then in a slight moderner vibe.  Text logo lets use the ns audio logo somewhere small in a corner. The Rave Land logo must be somewhere big in the top middle. Here the links.  NS Logo: https://www.dropbox.com/scl/fi/ut9ccra7st85qwotw8i6n/2021logo.png?rlkey=exmuxcs67hbfrp0sd0a4j51t9&dl=0  Rave Land Logo: https://www.dropbox.com/scl/fi/76v6l70yst460jadcl7gw/LOGO.pdf?rlkey=mutyod9y70asmc3v2jbwkxzld&dl=0   Presets in the middel above the FX section we like to see a dropdown menu. Then with presets we will make and send you to add in. We can make different sections. Maybe artist sections with presets behind it, or style presets. Like Serum 2 is having. They also have aclean drop-down list.  Brand;  NS Audio Name: RaveLand V1 

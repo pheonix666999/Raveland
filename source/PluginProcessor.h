@@ -49,6 +49,11 @@ public:
     int getCurrentPresetIndex() const { return currentPresetIndex; }
     juce::StringArray getPresetNames() const;
 
+    // Sample library
+    const juce::StringArray& getSampleSetNames() const { return sampleSetNames; }
+    int getSampleSetIndex(int layerIndex) const;
+    void setSampleSetIndex(int layerIndex, int setIndex);
+
 private:
     juce::AudioProcessorValueTreeState parameters;
 
@@ -58,6 +63,7 @@ private:
     juce::dsp::Chorus<float> chorus;
     juce::dsp::DelayLine<float> delay { 44100 };
     juce::Reverb reverb;
+    juce::dsp::StateVariableTPTFilter<float> filter;
     juce::dsp::WaveShaper<float> distortion { [] (float x) { return std::tanh(x); } };
 
     // Sample layers (up to 3)
@@ -65,11 +71,27 @@ private:
     std::array<bool, 3> layerEnabled { true, true, false };
     std::array<float, 3> layerGain { 0.8f, 0.7f, 0.6f };
     std::array<int, 3> layerStartRand { 35, 45, 55 };
+    std::array<int, 3> layerTune { 0, 0, 0 };
+    std::array<float, 3> layerAttackMs { 12.0f, 12.0f, 12.0f };
+    std::array<float, 3> layerReleaseMs { 420.0f, 420.0f, 420.0f };
+    juce::ReadWriteLock sampleLayerLock;
+
+    juce::File sampleRoot;
+    juce::StringArray sampleSetNames;
+    std::array<int, 3> currentSampleSetIndex { 0, 0, 0 };
+
+    juce::Array<int> heldNotes;
+    int currentMonoNote = -1;
 
     int currentPresetIndex = 0;
     juce::StringArray presetNames;
 
+    float modPhase = 0.0f;
+    float modEnv = 0.0f;
+
     void createFactoryPresets();
+    void scanSampleLibrary();
+    void loadSampleSet(int layerIndex, int setIndex);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RavelandAudioProcessor)
 };

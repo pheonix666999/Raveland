@@ -51,6 +51,13 @@ target_sources(Raveland
         source/WaveformDisplay.h
         source/FancyKnob.h)
 
+juce_add_binary_data(RavelandAssets
+    SOURCES
+        demo/assets/ns-audio.svg
+        demo/assets/raveland.svg
+        assets/ns_logo.png
+        assets/raveland_logo.jpg)
+
 target_compile_definitions(Raveland
     PRIVATE
         JUCE_WEB_BROWSER=0
@@ -74,4 +81,5 @@ target_link_libraries(Raveland
         juce::juce_gui_extra
         juce::juce_gui_basics
         juce::juce_graphics
-        juce::juce_core)
+        juce::juce_core
+        RavelandAssets)
