@@ -338,7 +338,7 @@ void RavelandAudioProcessor::loadPreset(int index)
 void RavelandAudioProcessor::scanSampleLibrary()
 {
     sampleSetNames.clear();
-    sampleRoot = {};
+    sampleRoot = juce::File();
 
     auto envPath = juce::SystemStats::getEnvironmentVariable("RAVELAND_SAMPLE_PATH", {});
     if (envPath.isNotEmpty())
